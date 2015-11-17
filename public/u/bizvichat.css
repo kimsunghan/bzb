@@ -1,0 +1,286 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* ---------- GENERAL ---------- */
+
+body {
+	background: #e9e9e9;
+	color: #9a9a9a;
+	font: 100%/1.5em "Droid Sans", sans-serif;
+	margin: 0;
+}
+
+#bizvi-chat a { text-decoration: none; }
+
+#bizvi-chat fieldset {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+#bizvi-chat h4, #bizvi-chat h5 {
+	line-height: 1.5em;
+	margin: 0;
+}
+
+#bizvi-chat hr {
+	background: #e9e9e9;
+    border: 0;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 1px;
+    margin: 0;
+    min-height: 1px;
+}
+
+#bizvi-chat img {
+    border: 0;
+    display: block;
+    height: auto;
+    max-width: 100%;
+}
+
+#bizvi-chat input {
+	border: 0;
+	color: inherit;
+    font-family: inherit;
+    font-size: 100%;
+    line-height:inherit;
+    margin: 0;
+}
+
+#bizvi-chat p { margin: 0; }
+
+#bizvi-chat .clearfix { *zoom: 1; } /* For IE 6/7 */
+#bizvi-chat .clearfix:before, #bizvi-chat .clearfix:after {
+    content: "";
+    display: table;
+}
+#bizvi-chat .clearfix:after { clear: both; }
+
+/* ---------- BIZVI-CHAT ---------- */
+
+#bizvi-chat {
+	bottom: 0;
+	font-size: 12px;
+	right: 24px;
+	position: fixed;
+	width: 300px;
+    z-index: 2147483647;
+}
+
+#bizvi-chat header {
+	background: #000;/*#293239;*/
+	border-radius: 5px 5px 0 0;
+	color: #fff;
+	cursor: pointer;
+	padding: 16px 24px;
+}
+
+#bizvi-chat .bizvi-icon img{
+        display: none;
+        height: 80px;
+        width: 80px;
+}
+
+#bizvi-chat h4:before {
+	background: #1a8a34;
+	border-radius: 50%;
+	content: "";
+	display: inline-block;
+	height: 8px;
+	margin: 0 8px 0 0;
+	width: 8px;
+}
+
+#bizvi-chat h4 {
+	font-size: 12px;
+    display: inline;
+}
+
+#bizvi-chat h5 {
+	font-size: 10px;
+}
+
+#bizvi-chat .brand-name{
+    float: right;
+    font-size: 12px;
+}
+
+#bizvi-chat .b{
+    color: #bca480;
+}
+
+#bizvi-chat .v{
+    color: #fff;
+}
+
+#bizvi-chat form {
+	padding: 24px;
+}
+
+#bizvi-chat fieldset {
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	padding: 8px;
+	outline: none;
+	width: 234px;
+}
+
+#bizvi-chat input[type="text"] {
+    padding-left: 8px;
+	outline: none;
+	width: 195px;
+    float: left;
+}
+
+#bizvichat-enterKey{
+    float: right;
+    padding: 5px;
+    width: 20px;
+    height: 26px;    
+    cursor: pointer;
+}
+
+.chat-message-counter {
+	background: #e62727;
+	border: 1px solid #fff;
+	border-radius: 50%;
+	font-size: 12px;
+	font-weight: bold;
+	height: 28px;
+	left: 0;
+	line-height: 28px;
+	margin: -15px 0 0 -15px;
+	position: absolute;
+	text-align: center;
+	top: 0;
+	width: 28px;
+    
+    /*opacity: 0.0;*/
+    /* Firefox 이전 버전에서 투명도 지정 */
+    /*-moz-opacity: 0.0;*/
+
+    /* Safari 이전 버전에서 투명도 지정 */
+    /*-khtml-opacity: 0.0;*/
+
+    /* MS Internet Explorer 8,9에서 투명도 지정. 반드시 filter보다 앞에 와야 함. 범위는 0~100 */
+    /*-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(opacity=0)";*/
+
+    /* MS Internet Explorer 4,5,6,7에서 투명도 지정. 8,9도 filter 지원하나 브라우저 모드에 따라 지원하지 않을 수 있으므로 추가함 */
+    /*filter: alpha(opacity=0);*/
+}
+
+/*
+.chat-close {
+	background: #1b2126;
+	border-radius: 50%;
+	color: #fff;
+	display: block;
+	float: right;
+	font-size: 10px;
+	height: 16px;
+	line-height: 16px;
+	margin: 2px 0 0 0;
+	text-align: center;
+	width: 16px;
+}
+*/
+
+.chat {
+	background: #fff;
+    height: 0;
+    border-left: solid 5px #000;
+    border-right: solid 5px #000;
+}
+
+.chat-history {
+	height: 252px;
+	padding: 8px 24px;
+	overflow-y: scroll;
+}
+
+.biz-chat-message {
+	margin: 16px 0;
+}
+
+.biz-chat-message img {
+	border-radius: 50%;
+	float: left;
+}
+
+.biz-chat-message .chat-message-content {
+	margin-left: 56px;
+}
+
+.biz-chat-message .chat-time {
+	float: right;
+	font-size: 10px;
+}
+
+.vi-chat-message {
+	margin: 16px 0;
+}
+
+.vi-chat-message img {
+	border-radius: 50%;
+	float: right;
+}
+
+.vi-chat-message .chat-message-content {
+	margin-right: 56px;
+}
+
+.vi-chat-message .chat-time {
+	float: left;
+	font-size: 10px;
+}
+
+.vi-chat-message .visitor{
+    float: right;
+}
+
+.vi-chat-message p{
+    clear:both;
+}
+
+.chat-feedback {
+	font-style: italic;	
+    text-align: center;
+}
+
+@media screen and (max-width: 980px) {    
+    #bizvi .bizvi-icon{
+        position: fixed;
+        bottom: 20px;
+        right: 24px;
+        width: 90px;
+        color: #fff;
+    }
+    
+    #bizvi .bizvi-icon:hover{
+        cursor: pointer;
+    }
+    
+    .chat-message-counter {
+        background: #e62727;
+        border: 1px solid #fff;
+        border-radius: 50%;
+        font-size: 12px;
+        font-weight: bold;
+        height: 28px;
+        left: 5px;
+        line-height: 28px;
+        margin: -15px 0 0 -15px;
+        position: absolute;
+        text-align: center;
+        top: 5px;
+        width: 28px;
+    }
+    
+    #bizvi .bizvi-icon img{
+        display: block;
+        height: 60px;
+        width: 80px;
+    }
+}

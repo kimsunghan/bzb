@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+
+<head>
+
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="http://l2.io/ip.js?var=myip"></script>
+
+
+    <meta charset="UTF-8">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+    <script>
+        Sandbox.modules = {};
+        Sandbox.modules.connectcallback = function(MYAPP) {
+
+            MYAPP.connectcallback = function() {
+
+                var channel = "ff9324712"
+                var socket = io('http://127.0.0.1:52273/' + channel);
+                var adduserdata = {
+                    myip: myip.replace(/\./g, ''),
+                    login: '0'
+                }
+                socket.emit('adduser', adduserdata);
+
+            };
+        };
+        Sandbox.modules.updatechatcallback = function(MYAPP) {
+            MYAPP.updatechatcallback = function(data) {
+                var myipnodot = myip.replace(/\./g, '')
+                $('#conversation').empty();
+                for (i = 0; data.length > i; i++) {
+
+
+                    if (myipnodot === data[i].username) {
+
+                        $('#conversation').append('<div style="text-align: right"> <b>' + data[i].username + ':</b> ' + data[i].chatdata + '</div> ');
+                    } else {
+                        $('#conversation').append('<div style="text-align: left"> <b>' + data[i].username + ':</b> ' + data[i].chatdata + '</div> ');
+                    }
+                }
+            };
+        };
+        Sandbox.modules.updateroomscallback = function(MYAPP) {
+            MYAPP.updateroomscallback = function(rooms, current_room) {
+                $('#rooms').empty();
+                $.each(rooms, function(key, value) {
+                    if (value == current_room) {
+                        $('#rooms').append('<div>' + value + '</div>');
+                    } else {
+                        $('#rooms').append('<div><a href="#" onclick="  MYAPP.switchRoom(\'' + value + '\')">' + value + '</a></div>');
+                    }
+                });
+            };
+        };
+        Sandbox.modules.switchRoom = function(MYAPP) {
+            MYAPP.switchRoom = function(room) {
+                socket.emit('switchRoom', room);
+            };
+        };
+
+        function Sandbox() {
+
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            var requiredmodules = args;
+
+            for (i = 0; i < requiredmodules.length; i++) {
+                Sandbox.modules[requiredmodules[i]](this);
+            }
+
+            callback(this);
+
+        }
+
+        new Sandbox('connectcallback', 'updatechatcallback', 'updateroomscallback', 'switchRoom', function(MYAPP) {
+
+
+            var channel = "ff9324712"
+            var socket = io('http://127.0.0.1:52273/' + channel);
+
+            // on connection to server, ask for user's name with an anonymous callback
+            socket.on('connect', function() {
+                MYAPP.connectcallback()
+            });
+            // socket.on('updatechat', function (username, data) { 데이터 베이스 쓰기전 코드
+            socket.on('updatechat', function(data) {
+                MYAPP.updatechatcallback(data)
+            }); //emit에서 username과 chatname이 넘어온다
+            // listener, whenever the server emits 'updaterooms', this updates the room the client is in
+            socket.on('updaterooms', function(rooms, current_room) {
+                MYAPP.updateroomscallback(rooms, current_room)
+            });
+
+            // on load of page
+            $(function() {
+                // when the client clicks SEND
+                $('#datasend').click(function() {
+                    var message = $('#data').val();
+                    $('#data').val('');
+
+
+                    // tell server to execute 'sendchat' and send along one parameter
+                    socket.emit('sendchat', message, 0);
+
+                });
+
+                // when the client hits ENTER on their keyboard
+                $('#data').keypress(function(e) {
+                    if (e.which == 13) {
+                        $(this).blur();
+                        $('#datasend').focus().click();
+                    }
+                });
+            });
+
+        });
+        //////////
+    </script>
+
+</head>
+
+<body>
+
+<div style="float:left;width:300px;height:250px;overflow:scroll-y;padding:10px;">
+    <div id="conversation" style="word-break:break-all"></div>
+    <input id="data" style="width:200px;" />
+    <input type="button" id="datasend" value="send" />
+</div>
+</body>
+
+</html>

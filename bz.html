@@ -1,0 +1,226 @@
+<!doctype html>
+<html>
+
+<head>
+
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+
+    <style>
+        .talktext_right {
+            background-color: lightyellow;
+        }
+
+        .talktext_left {
+            background-color: lightcyan;
+        }
+
+        .round_talk {
+            border-radius: 10px;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+        }
+/*        .talk_border{
+    border: 2px solid springgreen;
+}*/
+
+    </style>
+
+    <meta charset="UTF-8">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+    <style>
+     </style>
+    <script>
+        var channel = "ff9324712"
+        var socket = io('http://127.0.0.1:52273/' + channel);
+        login = '1';
+        var myip;
+        $('#conversation').empty();
+        // on connection to server, ask for user's name with an anonymous callback
+        socket.on('connect', function() {
+            connectcallback()
+        });
+        socket.on('updatechat', function(data) {
+            updatechatcallback(data)
+        });
+        socket.on('updaterooms', function(rooms) {
+            updateroomscallback(rooms)
+        });
+        socket.on('updateresnumber', function(data) {
+            updateresnumbercallback(data)
+        });
+        socket.on('disconnector', function(data) {
+            disconnectorcallback(data)
+        })
+
+        function connectcallback() {
+            // call the server-side function 'adduser' and send one parameter (value of prompt)
+            myip = prompt("What's your name?")
+            var adduserdata = {
+                myip: myip,
+                login: login
+            }
+
+            socket.emit('adduser', adduserdata);
+        }
+        // listener, whenever the server emits 'updatechat', this updates the chat body
+
+        // socket.on('updatechat', function (username, data) { 데이터 베이스 쓰기전 코드
+
+
+        function updatechatcallback(data) {
+
+            $('#conversation').empty();
+            for (i = 0; data.length > i; i++) {
+
+                if (myip === data[i].username) {
+
+                    //console.log(data[i].chatdata.length +data[i].username.length)
+                    if (data[i].chatdata.length + data[i].username.length > 40) {
+
+                        $('#conversation').append('<div class="" id=' + i + '_orderconversation style="float:left;width:40%;">.</div>')
+                        $('#conversation').append('<div class="talktext_right round_talk talk_border" id=' + i + '_conversation style="float:left;width:60%;"> <b>' + data[i].username + ':</b> ' + data[i].chatdata + '</div> ');
+
+
+
+                    } else if (data[i].chatdata.length + data[i].username.length < 40) {
+
+                        $('#conversation').append('<div class=" " id=' + i + '_orderconversation style="float:left;width:60%;">.</div>');
+                        $('#conversation').append('<div class="talktext_right round_talk talk_border" id=' + i + '_conversation style="float:left;width:40%"> <b>' + data[i].username + ':</b> ' + data[i].chatdata + '</div>');
+
+
+
+                    }
+
+                } else {
+                    if (data[i].chatdata.length + data[i].username.length > 40) {
+                        $('#conversation').append('<div class="talktext_left round_talk talk_border " id=' + i + '_conversation style="float:left;width:60%"> <b>' + data[i].username + ':</b> ' + data[i].chatdata + '</div> ');
+                        $('#conversation').append(' <div class=" " id=' + i + '_orderconversation style="float:left;width:40%;">.</div>');
+                    } else if (data[i].chatdata.length + data[i].username.length < 40) {
+                        $('#conversation').append(' <div class="talktext_left round_talk talk_border " id=' + i + '_conversation style="float:left;width:40%;"> <b>' + data[i].username + ':</b> ' + data[i].chatdata + '</div> ');
+                        $('#conversation').append('<div class="" id=' + i + '_orderconversation style="float:left;width:60%;">.</div>');
+                    }
+                }
+            }
+            //for문을 하나더 써본다
+            //2 if문 뒤에 넣어서 해본다.
+
+            for (i = 0; data.length > i; i++) {
+                console.log(document.getElementById(i + '_conversation').offsetHeight)
+                document.getElementById(i + '_orderconversation').style.height = document.getElementById(i + '_conversation').offsetHeight + 'px'
+                //  console.log( document.getElementById(i+'_orderconversation').offsetHeight)
+                //   console.log( document.getElementById(i+'_conversation').offsetHeight)
+                // console.log( document.getElementById(i+'_conversation').offsetHeight)
+            }
+            //emit에서 username과 chatname이 넘어온다
+        }
+        // listener, whenever the server emits 'updaterooms', this updates the room the client is in
+
+
+        function updateroomscallback(rooms) {
+            var list = []
+            $('#rooms').empty();
+            $.each(rooms, function(key, value) {
+
+                list.push(value)
+
+
+            });
+            //겹치는거 제거해서 uniq에 담는중
+            var uniq = list.reduce(function(c, d) {
+
+                if (c.indexOf(d) < 0) c.push(d)
+                return c;
+            }, [])
+
+
+            for (var i = 0; i < uniq.length; i++) {
+                $('#rooms').append('<div ><a class=' + uniq[i] + '_room href="#" onclick="switchRoom(\'' + uniq[i] + '\')">' + uniq[i] + '</a> <span class=' + uniq[i] + '_number></span>  </div>');
+            }
+
+        }
+
+        function updateresnumbercallback(data) {
+            var resnumber = 'up'
+            var roomname = '.' + data + '_number';
+            //  $(roomname).append('<span class="num">'+ ++resnumber  +'</span>');
+            $(roomname).html(resnumber);
+
+        }
+
+        function switchRoom(room) {
+            $('.' + room + '_number').empty();
+            socket.emit('switchRoom', room);
+        }
+
+
+        function disconnectorcallback(data) {
+
+            var roomname = '.' + data + '_room'
+            var roomupname = '.' + data + '_number'
+            //  $(roomname).append('<span class="num">'+ ++resnumber  +'</span>');
+            $(roomname).empty();
+            $(roomupname).empty();
+
+
+        }
+        // on load of page
+        $(function() {
+            // when the client clicks SEND
+            $('#datasend').click(function() {
+                var message = $('#data').val();
+                $('#data').val('');
+
+                // tell server to execute 'sendchat' and send along one parameter
+                socket.emit('sendchat', message, login);
+                socket.emit('sendtoserver',message)
+            });
+
+            // when the client hits ENTER on their keyboard
+            $('#data').keypress(function(e) {
+                if (e.which == 13) {
+                    $(this).blur();
+                    $('#datasend').focus().click();
+                }
+            });
+
+        });
+
+
+
+
+        /* //updaterooms원래
+         socket.on('updaterooms', function(rooms, current_room) {
+
+         $('#rooms').empty();
+         $.each(rooms, function(key, value) {
+         if(value == current_room){
+         $('#rooms').append('<div>' + value + '</div>');
+         }
+         else {
+         $('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
+         }
+         });
+         });
+
+         */
+    </script>
+
+</head>
+
+<body>
+<div style="float:left;width:150px;border-right:1px solid black;height:300px;padding:10px;overflow:scroll-y;">
+    <b>ROOMS</b>
+    <div id="rooms"></div>
+</div>
+<div style="float:left;width:600px;height:1250px;overflow:scroll-y;padding:10px;">
+    <div id="conversation" style="word-break:break-all">
+    </div>
+
+</div>
+<input id="data" style="width:200px;" />
+<input type="button" id="datasend" value="send" />
+</body>
+
+</html>

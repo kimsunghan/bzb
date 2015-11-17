@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>bizvi chat</title>
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700">
+    <link rel="stylesheet" href="bizvichat.css" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+    <!---------------------------->
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="http://l2.io/ip.js?var=myip"></script>
+
+
+<script>
+    var channel = "ff9324712"
+    var socket = io('http://127.0.0.1:52273/'+channel);
+    // on connection to server, ask for user's name with an anonymous callback
+    socket.on('connect', function(){connectcallback() });
+    // socket.on('updatechat', function (username, data) { 데이터 베이스 쓰기전 코드
+    socket.on('updatechat', function (data) { updatechatcallback(data) });  //emit에서 username과 chatname이 넘어온다
+    // listener, whenever the server emits 'updaterooms', this updates the room the client is in
+    socket.on('updaterooms', function(rooms, current_room) { updateroomscallback(rooms,current_room) });
+   // socket.on('getbzchatdata',function(data){getbzchatdatacallback(data)}
+    socket.on('sendtoclient',function(data){
+        getbzchatdatacallback(data)
+    })
+            function getbzchatdatacallback(data){
+                addBizMessage(data)
+            }
+    function connectcallback(){
+        // $('#conversation').empty();
+        // call the server-side function 'adduser' and send one parameter (value of prompt)
+
+        var adduserdata = {myip:myip.replace(/\./g,''),login:'0'}
+        socket.emit('adduser',adduserdata);
+
+    }
+    // listener, whenever the server emits 'updatechat', this updates the chat body
+    function updatechatcallback(data){
+        console.log(data[data.length -1].chatdata)
+
+        $('#conversation').empty();
+        for(i=0;data.length>i;i++){
+
+            $('#conversation').append('<b>'+data[i].username + ':</b> ' + data[i].chatdata + '<br>');
+
+
+        }
+    }
+////////////
+    /*Add biz message*/
+    function addBizMessage(message) {
+        var bizvi_chat = document.getElementById('bizvi-chat');
+        var div1 = document.createElement('div');
+        div1.classList.add('biz-chat-message', 'clearfix');
+
+        var img1 = document.createElement('img');
+        img1.src = 'http://gravatar.com/avatar/2c0ad52fc5943b78d6abe069cc08f320?s=32';
+        img1.style.height = '32px';
+        img1.style.width = '32px';
+
+        var div2 = document.createElement('div');
+        div2.classList.add('chat-message-content', 'clearfix');
+
+        var span1 = document.createElement('span');
+        span1.classList.add('chat-time');
+        span1.innerHTML = '14:02';
+
+        var h5_1 = document.createElement('h5');
+        h5_1.classList.add('biz');
+        h5_1.innerHTML = '상담자';
+
+        var p1 = document.createElement('p');
+        p1.innerHTML = message;
+
+        var hr1 = document.createElement('hr');
+
+        div1.appendChild(img1);
+        div1.appendChild(div2);
+
+        div2.appendChild(span1);
+        div2.appendChild(h5_1);
+        div2.appendChild(p1);
+
+        bizvi_chat.getElementsByClassName('chat-history')[0].appendChild(div1);
+        bizvi_chat.getElementsByClassName('chat-history')[0].appendChild(hr1);
+    }
+
+    ////////////
+
+
+    function updateroomscallback(rooms,current_room){
+
+        $('#rooms').empty();
+        $.each(rooms, function(key, value) {
+            if(value == current_room){
+                $('#rooms').append('<div>' + value + '</div>');
+            }
+            else {
+                $('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
+            }
+        });
+    }
+
+    function switchRoom(room){
+        socket.emit('switchRoom', room);
+    }
+
+</script>
+    <script type="text/javascript" src="bizvichat2.js"></script>
+    <script type="text/javascript" src="bizvichat.js" charset="utf-8"></script>
+    <!---------------------------->
+</head>
+
+<body>
+    <div id="bizvi">
+        <div class="bizvi-icon" >
+
+            <span class="chat-message-counter">3</span>
+        </div>
+        <div id="bizvi-chat">
+            <header class="clearfix">
+    <!--			<a href="#" class="chat-close">x</a>-->
+                <h4 class="biz-header-title">실시간 채팅</h4>
+                <span class="brand-name"><strong class="b">B</strong>iz<strong class="v">V</strong>i-Chat</span>
+                <span class="chat-message-counter">3</span>
+            </header>
+            <div class="chat">
+                <div class="chat-history">
+                    <div class="biz-chat-message clearfix">
+                        <img src="http://lorempixum.com/32/32/people" alt="" width="32" height="32">
+                        <div class="chat-message-content clearfix">
+                            <span class="chat-time">13:35</span>
+                            <h5 class="biz">박대규</h5>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error, explicabo quasi ratione odio dolorum harum.</p>
+                        </div> <!-- end chat-message-content -->
+                    </div> <!-- end chat-message -->
+                    <hr>
+                    <div class="vi-chat-message clearfix">
+                        <img src="http://gravatar.com/avatar/2c0ad52fc5943b78d6abe069cc08f320?s=32" alt="" width="32" height="32">
+                        <div class="chat-message-content clearfix">
+                            <span class="chat-time">13:37</span>
+                            <h5 class="visitor">고객</h5>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis, nulla accusamus magni vel debitis numquam qui tempora rem voluptatem delectus!</p>
+                        </div> <!-- end chat-message-content -->
+                    </div> <!-- end chat-message -->
+                    <hr>
+                    <div class="biz-chat-message clearfix">
+                        <img src="http://lorempixum.com/32/32/people" alt="" width="32" height="32">
+                        <div class="chat-message-content clearfix">
+                            <span class="chat-time">13:38</span>
+                            <h5 class="biz">박대규</h5>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing.</p>
+                        </div> <!-- end chat-message-content -->
+                    </div> <!-- end chat-message -->
+                    <hr>
+
+
+                </div> <!-- end chat-history -->
+                <p class="chat-feedback">상대방 타이핑 중...</p>
+                <form action="#" method="post">
+                    <fieldset>
+                        <input type="text" placeholder="메시지를 입력해주세요…" id="bizvichat-visitor-typing" autofocus>
+<input type="button" id="bizvichat-enterKey" >
+                        <input type="hidden">
+                    </fieldset>
+                </form>
+            </div> <!-- end chat -->
+        </div> <!-- end bizvi-chat -->
+    </div>
+    <div style="float:left;width:300px;height:250px;overflow:scroll-y;padding:10px;">
+
+<!--        <div style="float:left;width:300px;height:250px;overflow:scroll-y;padding:10px;">
+            <div id="conversation"></div>
+            <input id="data" style="width:200px;" />
+            <input type="button" id="datasend" value="send" />
+        </div>-->
+    </div><!-- end bizvi -->
+</body>
+</html>
